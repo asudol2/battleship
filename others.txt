@@ -1,0 +1,10 @@
+○   - pudło
+⊠  - trafiony(wstępnie)
+□   - statek(wstępnie)
+
+0 - puste pole
+1 - pole zajęte
+2 - pole trafione
+3 - pole chybione
+
+
