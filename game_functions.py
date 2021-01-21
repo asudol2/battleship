@@ -36,31 +36,15 @@ def player_shoot(matrix_object, fleet_object):
     cords = (first, second)
     feedback = check_if_ship_is(cords, matrix_object.get_matrix())
     if not feedback:
-        if check_if_ship_is_drowned(cords, matrix_object.get_matrix()):
-            print('Przestrzeliłeś!')
-            return matrix_object, fleet_object, False
-        else:
-            print('PUDŁO')
-            matrix_object.change_element_value(cords, 3)
-            return matrix_object, fleet_object, False
+        return missed(matrix_object, cords, False), fleet_object, False
     else:
-        print('TRAFIONY')
-        matrix_object.change_element_value(cords, 2)
-        print(show_actual_board(matrix_object.get_matrix(), True))
-        fleet_object.get_ship(cords).hurt()
-        lifes = fleet_object.get_ship(cords).get_size()
+        lifes, matrix_object, fleet_object = hit(matrix_object, cords, fleet_object, False)
         if lifes == 0:
-            #sleep(1.)
-            print('ZATOPIONY')
-            fleet_object.remove_ship_from_fleet(fleet_object.get_ship(cords))
+            fleet_object = sinked(fleet_object, cords, False)
         else:
-            fleet_object.get_ship(cords).remove_cord(cords)
+            temp, fleet_object = f_continue(fleet_object, cords, is_bot=False)
         #sleep(1.)
-        if fleet_object.if_fleet_is():
-            print('Strzelaj dalej!')
-            return matrix_object, fleet_object, True
-        else:
-            return matrix_object, fleet_object, False
+        return matrix_object, fleet_object, True
 
 
 def show_actual_state(player_board, computer_board):
@@ -78,8 +62,7 @@ def better_bot_shoot(matrix_object, fleet_object, list_of_shot_cords):
             matrix_object = missed(matrix_object, first_cords)
             return matrix_object, False, fleet_object, list_of_shot_cords
         else:
-            print('BOT TRAFIŁ w Twój statek!')
-            lifes, matrix_object, fleet_object = hit(matrix_object, first_cords, fleet_object)
+            lifes, matrix_object, fleet_object= hit(matrix_object, first_cords, fleet_object)
             if lifes == 0:
                 return matrix_object, True, sinked(fleet_object, first_cords), []
             else:
@@ -93,7 +76,6 @@ def better_bot_shoot(matrix_object, fleet_object, list_of_shot_cords):
             matrix_object = missed(matrix_object, second_cords)
             return matrix_object, False, fleet_object, list_of_shot_cords
         else:
-            print('BOT TRAFIŁ po raz drugi!')
             lifes, matrix_object, fleet_object = hit(matrix_object, second_cords, fleet_object)
             if lifes == 0:
                 return matrix_object, True, sinked(fleet_object, second_cords), []
@@ -110,7 +92,6 @@ def better_bot_shoot(matrix_object, fleet_object, list_of_shot_cords):
             matrix_object = missed(matrix_object, third_cords)
             return matrix_object, False, fleet_object, list_of_shot_cords
         else:
-            print('BOT TRAFIŁ po raz trzeci!')
             lifes, matrix_object, fleet_object = hit(matrix_object, third_cords, fleet_object)
             if lifes == 0:
                 return matrix_object, True, sinked(fleet_object, third_cords), []
@@ -128,7 +109,6 @@ def better_bot_shoot(matrix_object, fleet_object, list_of_shot_cords):
             matrix_object = missed(matrix_object, fourth_cords)
             return matrix_object, False, fleet_object, list_of_shot_cords
         else:
-            print('BOT TRAFIŁ po raz czwarty!')
             lifes, matrix_object, fleet_object = hit(matrix_object, fourth_cords, fleet_object)
             return matrix_object, True, sinked(fleet_object, fourth_cords), []
 
