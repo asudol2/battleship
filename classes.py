@@ -2,7 +2,7 @@
 class Ship:
     '''Tworzy statki o atrybutach size, direction,
     location(lista krotek/koordynatów)'''
-    def __init__(self, size, direction=None, location):
+    def __init__(self, size, location, direction=None):
         self._size = int(size)
         self._direction = direction
         self._location = location

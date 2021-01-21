@@ -63,7 +63,7 @@ def generate_computer_matrix():
                     for number in range(size):
                         matrix[first + number, second] = 1
                         list_of_cords.append((first + number, second))
-                list_of_infos.append((size, direction, list_of_cords))
+                list_of_infos.append((size, list_of_cords, direction))
     Bot_Matrix = Matrix(matrix)
     Bot_Fleet = Fleet(make_list_of_ships(list_of_infos))
     return Bot_Matrix, Bot_Fleet
@@ -82,7 +82,7 @@ def make_player_matrix():
         for cord in location:
             first, second = cord
             matrix[first, second] = 1
-        list_of_infos.append((size, direction, location))
+        list_of_infos.append((size, location, direction))
         list_of_sizes.pop(0)
         print(show_actual_board(matrix))
     Player_Matrix = Matrix(matrix)
@@ -248,18 +248,6 @@ def make_list_of_ships(list_of_infos):
     for items in infos:
         ship = Ship(infos[0][0], infos[0][1], infos[0][2])
         list_of_ships.append(ship)
-    # FourMast = Ship(infos[0][0], infos[0][1], infos[0][2])
-    # ThreeMast1 = Ship(infos[1][0], infos[1][1], infos[1][2])
-    # ThreeMast2 = Ship(infos[2][0], infos[2][1], infos[2][2])
-    # TwoMast1 = Ship(infos[3][0], infos[3][1], infos[3][2])
-    # TwoMast2 = Ship(infos[4][0], infos[4][1], infos[4][2])
-    # TwoMast3 = Ship(infos[5][0], infos[5][1], infos[5][2])
-    # OneMast1 = Ship(infos[6][0], infos[6][1], infos[6][2])
-    # OneMast2 = Ship(infos[7][0], infos[7][1], infos[7][2])
-    # OneMast3 = Ship(infos[8][0], infos[8][1], infos[8][2])
-    # OneMast4 = Ship(infos[9][0], infos[9][1], infos[9][2])
-    # list_of_ships = [FourMast, ThreeMast1, ThreeMast2, TwoMast1, TwoMast2,
-    #                 TwoMast3, OneMast1, OneMast2, OneMast3, OneMast4]
     return list_of_ships
 
 

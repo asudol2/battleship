@@ -3,7 +3,7 @@ from game_functions import show_actual_state, better_bot_shoot, player_shoot, in
 
 
 def main():
-    introduction()
+    # introduction()
     Bot_Matrix, Bot_Fleet = generate_computer_matrix()
     Player_Matrix, Player_Fleet = make_player_matrix()
     print('Grajmy!')
@@ -23,7 +23,7 @@ def main():
         else:
             show_actual_state(show_actual_board(Player_Matrix.get_matrix()), show_actual_board(Bot_Matrix.get_matrix(), True))
         while result_b:
-            Player_Matrix, Player_Fleet, result_b, list_of_shot_cords = better_bot_shoot(Player_Matrix, Player_Fleet, list_of_shot_cords)
+            Player_Matrix, result_b, Player_Fleet, list_of_shot_cords = better_bot_shoot(Player_Matrix, Player_Fleet, list_of_shot_cords)
             if not Player_Fleet.if_fleet_is():
                 print('Przegrałeś!')
                 print('Koniec gry :)')
