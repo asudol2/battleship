@@ -2,7 +2,7 @@
 class Ship:
     '''Tworzy statki o atrybutach size, direction,
     location(lista krotek/koordynatów)'''
-    def __init__(self, size, direction=None, location=[]):
+    def __init__(self, size, direction=None, location):
         self._size = int(size)
         self._direction = direction
         self._location = location
@@ -36,7 +36,7 @@ class Ship:
 
 class Fleet:
     '''Przechowuje listę obiektów klasy Ship '''
-    def __init__(self, ships_list=[]):
+    def __init__(self, ships_list):
         self._ships_list = ships_list
 
     def get_ships_list(self):
