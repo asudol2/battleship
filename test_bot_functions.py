@@ -33,15 +33,15 @@ def test_check_first_shoot():
     cords = (4, 9)
     assert check_first_shoot(array, cords)
 
-def test_check_first_shoot_false():
+def test_check_first_shoot_2():
     array = np.zeros((10, 10), dtype=int)
     cords_list = [(2, 4), (2, 6), (1, 5),
     (3, 5), (2, 5), (2, 7), (2,2), (2, 3)]
     for cords in cords_list:
         f, s = cords
-        array[f, s] = 3
+        array[f, s] = 1
     cords = (3, 6)
-    assert not check_first_shoot(array, cords)
+    assert check_first_shoot(array, cords)
 
 def test_check_if_score_true():
     array = np.zeros((10, 10), dtype=int)

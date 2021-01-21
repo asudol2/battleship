@@ -18,26 +18,37 @@ def choose_direction():
     return choice(['poziom', 'pion'])
 
 
-def check_if_possible(actual_matrix, cords, direction, size):
-    '''Dla bota;
-    Sprawdza czy możliwe jest dane ustawienie statku/strzelenie ma sens'''
-    matrix = actual_matrix
-    f, s = cords[0], cords[1]
-    for el in range(-1, 2):
-        for nu in range(-1, size+1):
-            if direction == 'poziom':
-                if (f+el) in range(10) and (s+nu) in range(10):
-                    if matrix[f+el, s+nu] != 0:
-                        return False
-                else:
-                    return False
-            elif direction == 'pion':
-                if (f+nu) in range(10) and (s+el) in range(10):
-                    if matrix[f+nu, s+el] != 0:
-                        return False
-                else:
-                    return False
-    return True
+# def check_if_possible(actual_matrix, cords, direction, size):
+#     '''Dla bota;
+#     Sprawdza czy możliwe jest dane ustawienie statku'''
+#     matrix = actual_matrix
+#     f, s = cords[0], cords[1]
+#     if size > 1:
+#         if direction == 'poziom':
+#             if s + size -1 >= 10:
+#                 return False
+#         if direction == 'pion':
+#             if f + size -1 >= 10:
+#                 return False
+#     temp_list = []
+#     for el in range(-1, 2):
+#         if direction == 'poziom':
+#             temp_list.append()
+#     # for el in range(-1, 2):
+#     #     for nu in range(-1, size+1):
+#     #         if direction == 'poziom':
+#     #             if (f+el) in range(10) and (s+nu) in range(10):
+#     #                 if matrix[f+el, s+nu] != 0:
+#     #                     return False
+#     #             else:
+#     #                 return False
+#     #         elif direction == 'pion':
+#     #             if (f+nu) in range(10) and (s+el) in range(10):
+#     #                 if matrix[f+nu, s+el] != 0:
+#     #                     return False
+#     #             else:
+#     #                 return False
+#     # return True   ######
 
 
 
@@ -52,7 +63,7 @@ def generate_computer_matrix():
         while not check:
             cords = create_random_cords()
             direction = choose_direction()
-            check = check_if_possible(matrix, cords, direction, size)
+            check = check_if_making_is_possible(size, cords, matrix, direction)
             if check:
                 first, second = cords[0], cords[1]
                 if direction == 'poziom':

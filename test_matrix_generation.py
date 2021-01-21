@@ -43,28 +43,6 @@ def test_show_actual_board_not_bot():
     assert board[5, 7] == '○'
     assert board[2, 6] == ' '
 
-def test_check_if_possible_true():
-    array = np.zeros((10,10), dtype=int)
-    direction = 'poziom'
-    size = 4
-    cords = (2, 5)
-    assert check_if_possible(array, cords, direction, size)
-
-def test_check_if_possible_false_one():
-    array = np.zeros((10,10), dtype=int)
-    direction = 'poziom'
-    size = 4
-    cords = (2, 5)
-    array[2, 8] = 1
-    assert not check_if_possible(array, cords, direction, size)
-
-def test_check_if_possible_false_two():
-    array = np.zeros((10,10), dtype=int)
-    direction = 'pion'
-    size = 4
-    cords = (2, 5)
-    array[1, 6] = 1
-    assert not check_if_possible(array, cords, direction, size)
 
 def test_check_if_making_is_possible_false_one():
     array = np.zeros((10,10), dtype=int)
