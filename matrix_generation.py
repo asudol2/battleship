@@ -22,20 +22,23 @@ def check_if_possible(actual_matrix, cords, direction, size):
     '''Dla bota;
     Sprawdza czy możliwe jest dane ustawienie statku/strzelenie ma sens'''
     matrix = actual_matrix
-    first, second = cords[0], cords[1]
-    check = True
-    try:
-        for element in range(-1, 2):
-            for number in range(-1, size+1):
-                if direction == 'poziom':
-                    if matrix[first+element, second+number] != 0:
-                        check = False
-                if direction == 'pion':
-                    if matrix[first+number, second+element] != 0:
-                        check = False
-        return check
-    except:
-        return False
+    f, s = cords[0], cords[1]
+    for el in range(-1, 2):
+        for nu in range(-1, size+1):
+            if direction == 'poziom':
+                if (f+el) in range(10) and (s+nu) in range(10):
+                    if matrix[f+el, s+nu] != 0:
+                        return False
+                else:
+                    return False
+            elif direction == 'pion':
+                if (f+nu) in range(10) and (s+el) in range(10):
+                    if matrix[f+nu, s+el] != 0:
+                        return False
+                else:
+                    return False
+    return True
+
 
 
 def generate_computer_matrix():
