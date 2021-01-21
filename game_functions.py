@@ -1,14 +1,17 @@
 from matrix_generation import ask_for_cords, show_actual_board
 from time import sleep
-from bot_functions import fourth_bot_shoot, third_bot_shoot, first_bot_shoot
 from bot_functions import (
+    fourth_bot_shoot,
+    third_bot_shoot,
+    first_bot_shoot,
     check_direction_and_turn,
     second_bot_shoot,
     check_if_score,
     bot_missed,
     bot_sinked,
     bot_hit,
-    bot_continue)
+    bot_continue
+)
 
 
 def check_if_ship_is(cords, matrix):
@@ -47,12 +50,12 @@ def player_shoot(matrix_object, fleet_object):
         fleet_object.get_ship(cords).hurt()
         lifes = fleet_object.get_ship(cords).get_size()
         if lifes == 0:
-            sleep(1.)
+            #sleep(1.)
             print('ZATOPIONY')
             fleet_object.remove_ship_from_fleet(fleet_object.get_ship(cords))
         else:
             fleet_object.get_ship(cords).remove_cord(cords)
-        sleep(1.)
+        #sleep(1.)
         if fleet_object.if_fleet_is():
             print('Strzelaj dalej!')
             return matrix_object, fleet_object, True
@@ -61,7 +64,7 @@ def player_shoot(matrix_object, fleet_object):
 
 
 def show_actual_state(player_board, computer_board):
-    sleep(1.)
+    #sleep(1.)
     '''Drukuje aktualny stan bitwy (plansze gracza i bota)'''
     print('\t\tTWOJA PLANSZA\t\t\t\t    PLANSZA PRZECIWNIKA')
     for p_board, c_board in zip(player_board, computer_board):
@@ -72,24 +75,26 @@ def better_bot_shoot(matrix_object, fleet_object, list_of_shot_cords=[]):
     if len(list_of_shot_cords) == 0:
         first_cords = first_bot_shoot(matrix_object.get_matrix())
         if not check_if_score(matrix_object.get_matrix(), first_cords):
-            return bot_missed(matrix_object, first_cords), fleet_object, list_of_shot_cords
+            matrix_object = bot_missed(matrix_object, first_cords)
+            return matrix_object, False, fleet_object, list_of_shot_cords
         else:
             print('BOT TRAFIŁ w Twój statek!')
             lifes, matrix_object, fleet_object = bot_hit(matrix_object, first_cords, fleet_object)
             if lifes == 0:
-                return matrix_object, result, bot_sinked(fleet_object, first_cords), []
+                return matrix_object, True, bot_sinked(fleet_object, first_cords), []
             else:
                 list_of_shot_cords, fleet_object = bot_continue(fleet_object, first_cords, list_of_shot_cords)
     if len(list_of_shot_cords) == 1:
         first_cords = list_of_shot_cords[0]
         result, second_cords = second_bot_shoot(matrix_object.get_matrix(), first_cords, list_of_shot_cords)
         if not result:
-            return bot_missed(matrix_object, second_cords), fleet_object, list_of_shot_cords
+            matrix_object = bot_missed(matrix_object, second_cords)
+            return matrix_object, False, fleet_object, list_of_shot_cords
         else:
             print('BOT TRAFIŁ po raz drugi!')
             lifes, matrix_object, fleet_object = bot_hit(matrix_object, second_cords, fleet_object)
             if lifes == 0:
-                return matrix_object, result, bot_sinked(fleet_object, second_cords), []
+                return matrix_object, True, bot_sinked(fleet_object, second_cords), []
             else:
                 list_of_shot_cords, fleet_object = bot_continue(fleet_object, second_cords, list_of_shot_cords)
     if len(list_of_shot_cords) == 2:
@@ -98,12 +103,13 @@ def better_bot_shoot(matrix_object, fleet_object, list_of_shot_cords=[]):
         result, third_cords = third_bot_shoot(matrix_object.get_matrix(), first_cords,
         second_cords, direction, turn, list_of_shot_cords)
         if not result:
-            return bot_missed(matrix_object, third_cords), fleet_object, list_of_shot_cords
+            matrix_object = bot_missed(matrix_object, third_cords)
+            return matrix_object, False, fleet_object, list_of_shot_cords
         else:
             print('BOT TRAFIŁ po raz trzeci!')
             lifes, matrix_object, fleet_object = bot_hit(matrix_object, second_cords, fleet_object)
             if lifes == 0:
-                return matrix_object, result, bot_sinked(fleet_object, third_cords), []
+                return matrix_object, True, bot_sinked(fleet_object, third_cords), []
             else:
                 list_of_shot_cords, fleet_object = bot_continue(fleet_object, second_cords, list_of_shot_cords)
     if len(list_of_shot_cords) == 3:
@@ -112,33 +118,34 @@ def better_bot_shoot(matrix_object, fleet_object, list_of_shot_cords=[]):
         result, fourth_cords = fourth_bot_shoot(matrix_object.get_matrix(),
         list_of_shot_cords, direction)
         if not result:
-            return bot_missed(matrix_object, fourth_cords), fleet_object, list_of_shot_cords
+            matrix_object = bot_missed(matrix_object, fourth_cords)
+            return matrix_object, False, fleet_object, list_of_shot_cords
         else:
-            return matrix_object, result, bot_sinked(fleet_object, fourth_cords), []
+            return matrix_object, True, bot_sinked(fleet_object, fourth_cords), []
 
 
 def introduction():
     print('Dzień dobry!')
-    sleep(0.5)
+    #sleep(0.5)
     print('Zaczynasz grę w statki.')
-    sleep(0.5)
+    #sleep(0.5)
     print('Na początek kilka reguł.')
-    sleep(0.5)
+    #sleep(0.5)
     print('Czytaj, nie mogą stykać się rogami ani bokami.')
-    sleep(0.5)
+    #sleep(0.5)
     print('Czytaj uważnie co gra do Ciebie pisze.')
-    sleep(3.)
+    #sleep(3.)
     print('Ty oraz bot, z którym będziesz grać, macie do dyspozycji: ')
-    sleep(0.5)
+    #sleep(0.5)
     print('Jeden 4-kadłubowiec, dwa 3-kadłubowce, trzy 2-kadłubowce i 4 1-kadłubowce.')
-    sleep(3.)
+    #sleep(3.)
     print('A oto oznaczenia:')
-    sleep(0.5)
+    #sleep(0.5)
     print('□  - to oznacza, że w tym miejscu jest Twój statek')
-    sleep(2.)
+    #sleep(2.)
     print('⊠  - to oznacza, że statek został trafiony.')
-    sleep(2.)
+    #sleep(2.)
     print('○   - to oznacza, że w tym miejscu zostało spudłowane')
-    sleep(2.)
+    #sleep(2.)
     print('Miłej gry życzę :)')
-    sleep(1.)
+    #sleep(1.)

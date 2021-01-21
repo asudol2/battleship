@@ -133,7 +133,7 @@ def get_info_about_ship(size, matrix):
     do ewentualnej zmiany później'''
     direction = None
     print(f'Tworzysz {size}-masztowiec.')
-    sleep(1.)
+    #sleep(1.)
     check = False
     if size != 1:
         direction = ask_for_direction()
@@ -143,9 +143,9 @@ def get_info_about_ship(size, matrix):
             composition = 'dół'
         while not check:
             print('Gdzie znajdzie się ten statek?')
-            sleep(1.)
+            #sleep(1.)
             print('Podaj początkowy koordynat, od którego będzie budowany statek')
-            sleep(1.)
+            #sleep(1.)
             print(f'UWAGA! W następnych krokach statek będzie budowany w {composition}')
             location = []
             first, second = ask_for_cords()
@@ -154,9 +154,9 @@ def get_info_about_ship(size, matrix):
             if not check:
                 print('Podane koordynaty są nieodpowiednie.')
                 print('Podaj poprawne dane.')
-                sleep(1.)
-            location.append((first, second))
+                #sleep(1.)
         else:
+            location.append(cords)
             while size > 1:
                 if direction == 'poziom':
                     second += 1
@@ -168,7 +168,7 @@ def get_info_about_ship(size, matrix):
     else:
         while not check:
             print('Gdzie znajdzie się ten statek?')
-            sleep(1.)
+            #sleep(1.)
             print('Podaj koordynaty statku.')
             location = []
             first, second = ask_for_cords()
@@ -183,11 +183,11 @@ def get_info_about_ship(size, matrix):
 
 def ask_for_direction():
     '''Zbiera dane nt. ustawienia statku'''
-    sleep(1.)
+    #sleep(1.)
     print('Jeżeli ma być ustawiony poziomo, podaj poziom.')
-    sleep(1.)
+    #sleep(1.)
     print('Jeżeli ma być ustawiony pionowo, podaj pion.')
-    sleep(1.)
+    #sleep(1.)
     print('Zależnie od wyboru, będzie on rysowany w prawo lub w dół.')
     meanwhile = False
     little_list = ['poziom', 'pion']
@@ -197,7 +197,7 @@ def ask_for_direction():
             meanwhile = True
             return direction
         else:
-            sleep(1.)
+            #sleep(1.)
             print('Podany został zły argument. Podaj poprawne słowo.')
 
 
@@ -217,9 +217,9 @@ def ask_for_cords():
     list_of_keys = [key for key in dict_of_changers]
     meanwhile = False
     while not meanwhile:
-        sleep(1.)
+        #sleep(1.)
         row = get_input('Podaj wiersz od 1 do 10.   ')
-        sleep(1.)
+        #sleep(1.)
         if row.isdigit():
             if int(row) in range(1, 11):
                 given = get_input('Podaj kolumnę od A do J.   ')
@@ -230,13 +230,13 @@ def ask_for_cords():
                     meanwhile = True
                     return first, second
                 else:
-                    sleep(1.)
+                    #sleep(1.)
                     print('Został podany zły argument. Podaj poprawne wielkości.')
             else:
-                sleep(1.)
+                #sleep(1.)
                 print('Został podany zły argument. Podaj poprawne wielkości.')
         else:
-            sleep(1.)
+            #sleep(1.)
             print('Został podany zły argument. Podaj poprawne wielkości.')
 
 
@@ -245,9 +245,11 @@ def make_list_of_ships(list_of_infos):
     informacji o statkach'''
     list_of_ships = []
     infos = list_of_infos
+    i = 0
     for items in infos:
-        ship = Ship(infos[0][0], infos[0][1], infos[0][2])
+        ship = Ship(infos[i][0], infos[i][1], infos[i][2])
         list_of_ships.append(ship)
+        i += 1
     return list_of_ships
 
 

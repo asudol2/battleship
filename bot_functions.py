@@ -1,5 +1,6 @@
 from random import choice
-from matrix_generation import create_random_cords
+from matrix_generation import create_random_cords, show_actual_board
+from time import sleep
 
 
 def first_bot_shoot(matrix):
@@ -12,7 +13,7 @@ def first_bot_shoot(matrix):
         return cords
 
 
-def check_bot_shoot_result(matrix, cords_list, list_of_shot_cords):
+def check_bot_shoot_result(matrix, cords_list, list_of_shot_cords, direction):
     '''Losuje koordynaty z listy, usuwa niepotrzebne i sprawdza rezultat strzału.'''
     cords_list = check_possibility_of_shoot(cords_list, matrix, list_of_shot_cords)
     chosen_cords = choice(cords_list)
@@ -25,6 +26,7 @@ def check_bot_shoot_result(matrix, cords_list, list_of_shot_cords):
 def check_possibility_of_shoot(cords_list, matrix, list_of_shot_cords):
     '''Usuwa koordynaty niemożliwe do wykonania'''
     to_remove = []
+    saize = range(0, 10)
     for cords in cords_list:
         if cords in list_of_shot_cords:
             to_remove.append(cords)
@@ -32,7 +34,7 @@ def check_possibility_of_shoot(cords_list, matrix, list_of_shot_cords):
         cords_list.remove(cords)
     to_remove = []
     for cords in cords_list:
-        if not cords[0] in range(10) or not range(10):
+        if not cords[0] in saize or not cords[1] in saize:
             to_remove.append(cords)
     for cords in to_remove:
         cords_list.remove(cords)
@@ -48,10 +50,9 @@ def check_possibility_of_shoot(cords_list, matrix, list_of_shot_cords):
             for s_num in range(-1, 2):
                 f_cord = cords[0] + f_num
                 s_cord = cords[1] + s_num
-                saize = range(0, 10)
-                temp_cords = (f_cord, s_cord)
+                # temp_cords = (f_cord, s_cord)
                 if f_cord in saize and s_cord in saize:
-                    if matrix[cords[0]+f_num, cords[1]+s_num] == 2:
+                    if matrix[f_cord, s_cord] == 2:
                         to_remove.append(cords)
     to_remove = list(set(to_remove))
     for cords in to_remove:
@@ -173,29 +174,29 @@ def check_direction_and_turn(first_cords, second_cords):
 def bot_missed(matrix_object, cords):
     print('BOT CHYBIŁ')
     '''BOT CHYBIŁ'''
-    sleep(1.)
+    ###sleep(1.)
     matrix_object.change_element_value(cords, 3)
-    return matrix_object, False,
+    return matrix_object
 
 def bot_hit(matrix_object, cords, fleet_object):
     '''BOT TRAFIŁ'''
-    sleep(1.)
-    matrix_object.change_element_value(first_cords, 2)
+    ###sleep(1.)
+    matrix_object.change_element_value(cords, 2)
     print(show_actual_board(matrix_object.get_matrix()))
-    fleet_object.get_ship(first_cords).hurt()
-    return fleet_object.get_ship(first_cords).get_size(), matrix_object, fleet_object
+    fleet_object.get_ship(cords).hurt()
+    return fleet_object.get_ship(cords).get_size(), matrix_object, fleet_object
 
 def bot_sinked(fleet_object, cords):
     '''BOT ZATOPIŁ'''
-    sleep(1.)
+    ###sleep(1.)
     print('BOT ZATOPIŁ STATEK!')
-    fleet_object.remove_ship_from_fleet(fleet_object.get_ship(first_cords))
+    fleet_object.remove_ship_from_fleet(fleet_object.get_ship(cords))
     return fleet_object
 
 def bot_continue(fleet_object, cords, list_of_shot_cords):
-    fleet_object.get_ship(first_cords).remove_cord(first_cords)
-    list_of_shot_cords.append(first_cords)
-    sleep(1.)
+    fleet_object.get_ship(cords).remove_cord(cords)
+    list_of_shot_cords.append(cords)
+    ###sleep(1.)
     print('Ostrzał będzie kontynuowany')
-    sleep(2.5)
+    ###sleep(2.5)
     return list_of_shot_cords, fleet_object
