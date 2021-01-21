@@ -1,7 +1,14 @@
 from matrix_generation import ask_for_cords, show_actual_board
 from time import sleep
 from bot_functions import fourth_bot_shoot, third_bot_shoot, first_bot_shoot
-from bot_functions import check_direction_and_turn, second_bot_shoot, check_if_score
+from bot_functions import (
+    check_direction_and_turn,
+    second_bot_shoot,
+    check_if_score,
+    bot_missed,
+    bot_sinked,
+    bot_hit,
+    bot_continue)
 
 
 def check_if_ship_is(cords, matrix):
@@ -65,102 +72,49 @@ def better_bot_shoot(matrix_object, fleet_object, list_of_shot_cords=[]):
     if len(list_of_shot_cords) == 0:
         first_cords = first_bot_shoot(matrix_object.get_matrix())
         if not check_if_score(matrix_object.get_matrix(), first_cords):
-            sleep(1.)
-            print('BOT CHYBIŁ')
-            matrix_object.change_element_value(first_cords, 3)
-            # print(show_actual_board(matrix_object.get_matrix()))
-            return matrix_object, fleet_object, False, list_of_shot_cords
+            return bot_missed(matrix_object, first_cords), fleet_object, list_of_shot_cords
         else:
-            sleep(1.)
             print('BOT TRAFIŁ w Twój statek!')
-            matrix_object.change_element_value(first_cords, 2)
-            print(show_actual_board(matrix_object.get_matrix()))
-            fleet_object.get_ship(first_cords).hurt()
-            lifes = fleet_object.get_ship(first_cords).get_size()
+            lifes, matrix_object, fleet_object = bot_hit(matrix_object, first_cords, fleet_object)
             if lifes == 0:
-                sleep(1.)
-                print('BOT ZATOPIŁ STATEK!')
-                fleet_object.remove_ship_from_fleet(fleet_object.get_ship(first_cords))
-                return matrix_object, fleet_object, True, []
+                return matrix_object, result, bot_sinked(fleet_object, first_cords), []
             else:
-                fleet_object.get_ship(first_cords).remove_cord(first_cords)
-                list_of_shot_cords.append(first_cords)
-                sleep(1.)
-                print('Ostrzał będzie kontynuowany')
-                sleep(2.5)
+                list_of_shot_cords, fleet_object = bot_continue(fleet_object, first_cords, list_of_shot_cords)
     if len(list_of_shot_cords) == 1:
         first_cords = list_of_shot_cords[0]
         result, second_cords = second_bot_shoot(matrix_object.get_matrix(), first_cords, list_of_shot_cords)
         if not result:
-            sleep(1.)
-            print('BOT CHYBIŁ!')
-            matrix_object.change_element_value(second_cords, 3)
-            # print(show_actual_board(matrix_object.get_matrix()))
-            return matrix_object, fleet_object, False, list_of_shot_cords
+            return bot_missed(matrix_object, second_cords), fleet_object, list_of_shot_cords
         else:
-            sleep(1.)
             print('BOT TRAFIŁ po raz drugi!')
-            matrix_object.change_element_value(second_cords, 2)
-            print(show_actual_board(matrix_object.get_matrix()))
-            fleet_object.get_ship(second_cords).hurt()
-            lifes = fleet_object.get_ship(second_cords).get_size()
+            lifes, matrix_object, fleet_object = bot_hit(matrix_object, second_cords, fleet_object)
             if lifes == 0:
-                sleep(1.)
-                print('BOT ZATOPIŁ STATEK!')
-                fleet_object.remove_ship_from_fleet(fleet_object.get_ship(second_cords))
-                return matrix_object, fleet_object, True, []
+                return matrix_object, result, bot_sinked(fleet_object, second_cords), []
             else:
-                fleet_object.get_ship(second_cords).remove_cord(second_cords)
-                sleep(1.)
-                print('Ostrzał będzie kontynuowany')
-                sleep(2.5)
-                list_of_shot_cords.append(second_cords)
+                list_of_shot_cords, fleet_object = bot_continue(fleet_object, second_cords, list_of_shot_cords)
     if len(list_of_shot_cords) == 2:
         first_cords, second_cords = list_of_shot_cords[0], list_of_shot_cords[1]
         direction, turn = check_direction_and_turn(first_cords, second_cords)
         result, third_cords = third_bot_shoot(matrix_object.get_matrix(), first_cords,
         second_cords, direction, turn, list_of_shot_cords)
         if not result:
-            sleep(1.)
-            print('BOT CHYBIŁ!')
-            matrix_object.change_element_value(third_cords, 3)
-            # print(show_actual_board(matrix_object.get_matrix()))
-            return matrix_object, fleet_object, False, list_of_shot_cords
+            return bot_missed(matrix_object, third_cords), fleet_object, list_of_shot_cords
         else:
-            sleep(1.)
             print('BOT TRAFIŁ po raz trzeci!')
-            matrix_object.change_element_value(third_cords, 2)
-            print(show_actual_board(matrix_object.get_matrix()))
-            fleet_object.get_ship(third_cords).hurt()
-            lifes = fleet_object.get_ship(third_cords).get_size()
+            lifes, matrix_object, fleet_object = bot_hit(matrix_object, second_cords, fleet_object)
             if lifes == 0:
-                sleep(1.)
-                print('BOT ZATOPIŁ STATEK!')
-                fleet_object.remove_ship_from_fleet(fleet_object.get_ship(third_cords))
-                return matrix_object, fleet_object, True, []
+                return matrix_object, result, bot_sinked(fleet_object, third_cords), []
             else:
-                fleet_object.get_ship(third_cords).remove_cord(third_cords)
-                sleep(1.)
-                print('Ostrzał będzie kontynuowany')
-                sleep(2.5)
-                list_of_shot_cords.append(third_cords)
+                list_of_shot_cords, fleet_object = bot_continue(fleet_object, second_cords, list_of_shot_cords)
     if len(list_of_shot_cords) == 3:
         first_cords, second_cords = list_of_shot_cords[0], list_of_shot_cords[1]
         third_cords = list_of_shot_cords[2]
         result, fourth_cords = fourth_bot_shoot(matrix_object.get_matrix(),
         list_of_shot_cords, direction)
         if not result:
-            sleep(1.)
-            print('BOT CHYBIŁ!')
-            matrix_object.change_element_value(fourth_cords, 3)
-            # print(show_actual_board(matrix_object.get_matrix()))
-            return matrix_object, fleet_object, False, list_of_shot_cords
+            return bot_missed(matrix_object, fourth_cords), fleet_object, list_of_shot_cords
         else:
-            sleep(1.)
-            print('BOT ZATOPIŁ statek!')
-            matrix_object.change_element_value(fourth_cords, 2)
-            fleet_object.remove_ship_from_fleet(fleet_object.get_ship(fourth_cords))
-            return matrix_object, fleet_object, True, []
+            return matrix_object, result, bot_sinked(fleet_object, fourth_cords), []
 
 
 def introduction():

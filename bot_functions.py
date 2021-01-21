@@ -168,3 +168,34 @@ def check_direction_and_turn(first_cords, second_cords):
         else:
             turn = 'dół'
     return direction, turn
+
+
+def bot_missed(matrix_object, cords):
+    print('BOT CHYBIŁ')
+    '''BOT CHYBIŁ'''
+    sleep(1.)
+    matrix_object.change_element_value(cords, 3)
+    return matrix_object, False,
+
+def bot_hit(matrix_object, cords, fleet_object):
+    '''BOT TRAFIŁ'''
+    sleep(1.)
+    matrix_object.change_element_value(first_cords, 2)
+    print(show_actual_board(matrix_object.get_matrix()))
+    fleet_object.get_ship(first_cords).hurt()
+    return fleet_object.get_ship(first_cords).get_size(), matrix_object, fleet_object
+
+def bot_sinked(fleet_object, cords):
+    '''BOT ZATOPIŁ'''
+    sleep(1.)
+    print('BOT ZATOPIŁ STATEK!')
+    fleet_object.remove_ship_from_fleet(fleet_object.get_ship(first_cords))
+    return fleet_object
+
+def bot_continue(fleet_object, cords, list_of_shot_cords):
+    fleet_object.get_ship(first_cords).remove_cord(first_cords)
+    list_of_shot_cords.append(first_cords)
+    sleep(1.)
+    print('Ostrzał będzie kontynuowany')
+    sleep(2.5)
+    return list_of_shot_cords, fleet_object
