@@ -1,7 +1,21 @@
 
 class Ship:
-    '''Makes ship object with size, direction
-    and location (list of tuples) attributes'''
+    '''
+    A class to represent a ship
+
+    ...
+
+    Attributes
+    ----------
+    size : int
+        number of ship's element
+    location : list
+        list of tuples containing cords
+    direction : str
+        default None
+        describes composition of ship
+        'pion' or 'poziom
+    '''
     def __init__(self, size, location, direction=None):
         self._size = int(size)
         self._direction = direction
@@ -36,7 +50,16 @@ class Ship:
 
 
 class Fleet:
-    '''Stores list of ship objects'''
+    '''
+    A class to represent fleet of ships.
+
+    ...
+
+    Attributes
+    ----------
+    ships_list : list
+        list of Ship class objects
+    '''
     def __init__(self, ships_list):
         self._ships_list = ships_list
 
@@ -75,7 +98,22 @@ class Fleet:
 
 
 class Matrix:
-    '''Store array data'''
+    '''
+    A class containing matrix/array.
+
+    ...
+
+    Attributes
+    ----------
+    matrix : array
+        numpy array with proper values
+        in 0-3 range
+        0 - place is empty
+        1 - there's a ship's element
+        2 - ship's element was drowned
+        3 - missed shot
+
+    '''
     def __init__(self, matrix):
         self._matrix = matrix
 

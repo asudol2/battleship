@@ -13,21 +13,31 @@ from bot_functions import (
 
 
 def check_if_ship_is(cords, matrix):
-    '''Checks if on given cords is any ship'''
+    '''
+    Checks if on given cords is any ship
+    '''
     if matrix[cords[0], cords[1]] == 1:
         return True
     return False
 
 
 def check_if_ship_is_drowned(cords, matrix):
-    '''Checks if on this cords was once shot'''
+    '''
+    Checks if on this cords was once shot
+    '''
     if matrix[cords[0], cords[1]] == 2:
         return True
     return False
 
 
 def player_shoot(matrix_object, fleet_object, dim):
-    '''Manage with player shoots'''
+    '''
+    Manage with player shoots.
+    Directs to ask_for_cords() function to get
+    cords from player. In proper situations leads
+    to missed(), hit(), sinked() or f_continue()
+    functions
+    '''
     print('Wybierz miejsce, w które strzelisz.')
     first, second = ask_for_cords(dim)
     cords = (first, second)
@@ -46,7 +56,9 @@ def player_shoot(matrix_object, fleet_object, dim):
 
 
 def show_actual_state(player_matrix_object, bot_matrix_object, dim):
-    '''Print boards of player and bot'''
+    '''
+    Print actual boards of player and bot
+    '''
     player_board = show_actual_board(player_matrix_object.get_matrix(), dim)
     bot_board = show_actual_board(bot_matrix_object.get_matrix(), dim, True)
     for p_board, b_board in zip(player_board, bot_board):
@@ -54,7 +66,9 @@ def show_actual_state(player_matrix_object, bot_matrix_object, dim):
 
 
 def better_bot_shoot(matrix_object, fleet_object, shot_list, dim):
-    '''Manage with bot shoots'''
+    '''
+    Manage with bot shoots
+    '''
     result = True
     while result:
         if len(shot_list) == 0:
@@ -85,7 +99,9 @@ def better_bot_shoot(matrix_object, fleet_object, shot_list, dim):
 
 
 def introduction():
-    '''Makes introduction in polish'''
+    '''
+    Makes introduction in polish
+    '''
     print('Dzień dobry!')
     print('Zaczynasz grę w statki.')
     print('Na początek kilka reguł.')
@@ -95,8 +111,8 @@ def introduction():
     print('Ilość statków i wielkość planszy będzie zależała od Twojego wyboru')
     print('Będziesz miał do dyspozycji statek o największej ilości kadłubów')
     print('o jeden mniej statków o ilości kadłubów mniejszej o jeden etc.')
-    print('W przypadku, gdy wybierzesz statek 5-kadłubowy,')
-    print('ich ilość będzie niestandardowa.')
+    print('Jeżeli generowanie planszy będzie trwało zbyt długo,')
+    print('zresetuj grę.')
     print('W odpowiednich momentach będzie wyświetlana Twoja plansza')
     print('bądź plansza przeciwnika albo obie:')
     print('Twoja po lewej, bota po prawej stronie.')

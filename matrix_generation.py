@@ -5,23 +5,31 @@ from math import isqrt
 
 
 def generate_empty_matrix(dim):
-    '''Create empty array of given dimension'''
+    '''
+    Creates empty array of given dimension
+    '''
     return np.zeros((dim, dim), dtype=int)
 
 
 def create_random_cords(dim):
-    '''Draw random cords from given range'''
+    '''
+    Draws random cords from given range
+    '''
     return (randint(0, dim-1), randint(0, dim-1))
 
 
 def choose_direction():
-    '''Draw direction of shoot'''
+    '''
+    Draws direction of shoot
+    '''
     return choice(['poziom', 'pion'])
 
 
 def get_basic_info():
-    '''Gets info about number of ships and dimension
-        of board'''
+    '''
+    Gets info about number of ships
+    and dimension of board
+    '''
     eh = True
     while eh:
         print('Ilość kadłubów największego statku powinna zawierać się')
@@ -37,34 +45,27 @@ def get_basic_info():
                 eh = False
     eh = True
     m_dim = count_minimal_dimension(big)
-    if big == 5:
-        print('Plansza musi mieć wymiary 16x16')
-        print('Będzie się ona składać z jednego 5-kadłubowca,')
-        print('dwóch 4-kadłubowców, dwóch 3-kadłubowców,')
-        print('trzech 2-kadłubowców i trzech 1-kadłubowców.')
-        sizes_list = [5, 4, 4, 3, 3, 2,
-                      2, 2, 1, 1, 1]
-        dim = 16
-    else:
-        while eh:
-            print(f'Wymiary planszy to co najmniej {m_dim}x{m_dim}. ')
-            print('Największy dopuszczalny wymiar to 16')
-            dim = input('Jakie wymiary ma mieć plansza? (Podaj długość boku)')
-            if not dim.isdigit():
+    while eh:
+        print(f'Wymiary planszy to co najmniej {m_dim}x{m_dim}. ')
+        print('Największy dopuszczalny wymiar to 16')
+        dim = input('Jakie wymiary ma mieć plansza? (Podaj długość boku)')
+        if not dim.isdigit():
+            print('Podałeś złe dane. ')
+        else:
+            dim = int(dim)
+            if dim not in range(m_dim, 17):
                 print('Podałeś złe dane. ')
             else:
-                dim = int(dim)
-                if dim not in range(1, 17):
-                    print('Podałeś złe dane. ')
-                else:
-                    eh = False
-            sizes_list = count_list_of_sizes(big)
-            sizes_list.reverse()
+                eh = False
+        sizes_list = count_list_of_sizes(big)
+        sizes_list.reverse()
     return dim, sizes_list
 
 
 def count_list_of_sizes(big):
-    '''Prepares list of ships' sizes'''
+    '''
+    Prepares list of ships' sizes
+    '''
     list_of_sizes = []
     mom = 1
     while big > 0:
@@ -78,7 +79,9 @@ def count_list_of_sizes(big):
 
 
 def count_minimal_dimension(big):
-    '''Calculate minimal needed dimension'''
+    '''
+    Calculate minimal needed dimension
+    '''
     x = big
     ins = int(x*(x**2 + 6*x + 5)/3)
     min_dim = isqrt(ins) + 1
@@ -86,7 +89,9 @@ def count_minimal_dimension(big):
 
 
 def generate_computer_matrix(list_of_sizes, dim):
-    '''Creates matrix and fleet for bot'''
+    '''
+    Creates matrix and fleet for bot.
+    '''
     matrix = generate_empty_matrix(dim)
     list_of_infos = []
     for size in list_of_sizes:
@@ -115,7 +120,9 @@ def generate_computer_matrix(list_of_sizes, dim):
 
 
 def make_player_matrix(list_of_sizes, dim):
-    '''Conducts creating player's matrix and fleet'''
+    '''
+    Conducts creating player's matrix and fleet
+    '''
     list_of_infos = []
     matrix = np.zeros((dim, dim), dtype=int)
     print(make_empty_board(dim))
@@ -135,7 +142,9 @@ def make_player_matrix(list_of_sizes, dim):
 
 
 def make_empty_board(dim):
-    '''Creates empty pattern of visible board'''
+    '''
+    Creates empty pattern of visible board
+    '''
     board = np.zeros((dim+1, dim+1), dtype=object)
     start = 0
     for row in board:
@@ -160,7 +169,10 @@ def make_empty_board(dim):
 
 
 def show_actual_board(matrix, dim, is_bot=False):
-    '''Returns actual board'''
+    '''
+    Returns actual board (with signs
+    of ship, sinked and missed)
+    '''
     board = make_empty_board(dim)
     r_index = 0
     for row in matrix:
@@ -179,7 +191,11 @@ def show_actual_board(matrix, dim, is_bot=False):
 
 
 def get_info_about_ship(size, matrix, dim):
-    '''Collects info about ship'''
+    '''
+    Collects info about ship from player.
+    Asks for ship's direction and location
+    Returns directions and location (list of cords).
+    '''
     direction = None
     print(f'Tworzysz {size}-masztowiec.')
     check = False
@@ -194,14 +210,12 @@ def get_info_about_ship(size, matrix, dim):
             print('Podaj koordynat, od którego będzie budowany statek')
             print(f'UWAGA! Następnie statek będzie budowany w {composition}')
             location = []
-            first, second = ask_for_cords(dim)
+            check, first, second = get_and_check_cords(size, matrix,
+                                                       dim,
+                                                       direction)
             cords = (first, second)
-            check = check_if_making_is_possible(size, cords,
-                                                matrix, dim,
-                                                direction)
             if not check:
-                print('Podane koordynaty są nieodpowiednie.')
-                print('Podaj poprawne dane.')
+                wrong_cords()
         else:
             location.append(cords)
             while size > 1:
@@ -217,18 +231,39 @@ def get_info_about_ship(size, matrix, dim):
             print('Gdzie znajdzie się ten statek?')
             print('Podaj koordynaty statku.')
             location = []
-            first, second = ask_for_cords(dim)
-            cords = (first, second)
-            check = check_if_making_is_possible(1, cords, matrix, dim)
+            check, first, second = get_and_check_cords(1, matrix,
+                                                       dim)
             if not check:
-                print('Podane koordynaty są nieodpowiednie.')
-                print('Podaj poprawne dane.')
+                wrong_cords()
             location = [(first, second)]
     return direction, location
 
 
+def wrong_cords():
+    '''
+    Print info about wrong cords
+    '''
+    print('Podane koordynaty są nieodpowiednie.')
+    print('Podaj poprawne dane.')
+
+
+def get_and_check_cords(size, matrix, dim, direction=None):
+    '''
+    Condutcs getting cords. If are correct, returns
+    True and cords, else False and cords.
+    '''
+    first, second = ask_for_cords(dim)
+    cords = (first, second)
+    check = check_if_making_is_possible(size, cords,
+                                        matrix, dim,
+                                        direction)
+    return check, first, second
+
+
 def ask_for_direction():
-    '''Asks player about direction of creating ship'''
+    '''
+    Asks player about direction of creating ship
+    '''
     print('Jeżeli ma być ustawiony poziomo, podaj poziom.')
     print('Jeżeli ma być ustawiony pionowo, podaj pion.')
     print('Zależnie od wyboru, będzie on rysowany w prawo lub w dół.')
@@ -244,7 +279,9 @@ def ask_for_direction():
 
 
 def ask_for_cords(dim):
-    '''Collects data about first cords of ships'''
+    '''
+    Collects data about first cords of ships.
+    '''
     changers = rev_dictionary()
     list_of_keys = [key for key in changers]
     meanwhile = False
@@ -270,8 +307,11 @@ def ask_for_cords(dim):
 
 
 def make_list_of_ships(list_of_infos):
-    '''Creates and returnes list of ships
-        to make fleet'''
+    '''
+    Creates and returns list of ships
+    to make fleet (list of ships is basic
+    fleet object attribute).
+    '''
     list_of_ships = []
     infos = list_of_infos
     i = 0
@@ -283,7 +323,12 @@ def make_list_of_ships(list_of_infos):
 
 
 def check_if_making_is_possible(size, cords,  matrix, dim, direction=None):
-    '''Checks if it's possible to place ship in given place'''
+    '''
+    Checks if it's possible to place ship in given place
+    (basing on actual matrix)
+    If it's possible, returns True,
+    else returns False.
+    '''
     list_of_cords = []
     to_remove = []
     if direction == 'poziom':
@@ -320,7 +365,10 @@ def check_if_making_is_possible(size, cords,  matrix, dim, direction=None):
 
 
 def dictionary():
-    '''Dict of replecable values'''
+    '''
+    Dict of replecable values
+    for use of other functions.
+    '''
     letters = {
         '0': ' 0',
         '1': 'A',
@@ -345,7 +393,10 @@ def dictionary():
 
 
 def rev_dictionary():
-    '''Reversed dict of values'''
+    '''
+    Reversed dict of values
+    for use of other functions
+    '''
     letters = dictionary()
     letters['0'] = '0'
     rev_letters = {v: int(k) for k, v in letters.items()}

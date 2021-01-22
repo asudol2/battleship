@@ -13,7 +13,12 @@ from game_functions import (
 
 
 def main():
-    '''Whole game function'''
+    '''
+    Whole game function.
+    Gets info from player. Creates bot and player fleets.
+    Conducts whole game process and when needed, prints
+    messages to player.
+    '''
     introduction()
     dim, size_list = get_basic_info()
     Bot_Matrix, Bot_Fleet = generate_computer_matrix(size_list, dim)

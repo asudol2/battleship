@@ -3,8 +3,10 @@ from matrix_generation import create_random_cords
 
 
 def first_bot_shoot(matrix, dim):
-    '''Choose cords for first bot's shoot
-    and return them'''
+    '''
+    Choose cords for first bot's shoot
+    and returns them
+    '''
     check = False
     while not check:
         cords = create_random_cords(dim)
@@ -15,8 +17,10 @@ def first_bot_shoot(matrix, dim):
 
 def check_bot_shoot_result(matrix, cords_list, shot_list,
                            dim, direction=None):
-    '''Draws cords from list, deletes unneded
-        and check result of shoot'''
+    '''
+    Draws cords from list, deletes unneded
+    and checks result of shoot
+    '''
     new_list = check_possibility_of_shoot(cords_list, matrix,
                                           shot_list, dim, direction)
     chosen_cords = choice(new_list)
@@ -28,7 +32,9 @@ def check_bot_shoot_result(matrix, cords_list, shot_list,
 
 def check_possibility_of_shoot(cords_list, matrix,
                                shot_list, dim, direction=None):
-    '''Delete cords which are impossible to do'''
+    '''
+    Delete cords which are impossible to make shot at.
+    '''
     to_remove = []
     saize = range(dim)
     for cords in cords_list:
@@ -53,7 +59,13 @@ def check_possibility_of_shoot(cords_list, matrix,
 
 
 def another_bot_shoot(matrix, shot_list, dim, direction=None, turn=None):
-    '''Returns result and new cords'''
+    '''
+    Returns result and new cords;
+    creates list of sensible-to-shoot cords
+    then uses it as an argument for
+    check_bot_shoot_result, which returns
+    proper values
+    '''
     shot_list.sort()
     f_cords = shot_list[0]
     s_cords = shot_list[-1]
@@ -72,7 +84,11 @@ def another_bot_shoot(matrix, shot_list, dim, direction=None, turn=None):
 
 def conduct_bot_shot(matrix_object, fleet_object,
                      shot_list, cords, result, dim):
-    '''Conducts whole bot's shooting process. '''
+    '''
+    Conducts whole bot's shooting process.
+    In appropriate situations leads to missed(),
+    hit(), sinked() or f_continue() functions.
+    '''
     if not result:
         matrix_object = missed(matrix_object, cords)
         return matrix_object, fleet_object, shot_list
@@ -89,8 +105,14 @@ def conduct_bot_shot(matrix_object, fleet_object,
 
 
 def check_first_shoot(matrix, cords, dim):
-    '''Checks if it's possible to shoot at
-        chosen cords'''
+    '''
+    Checks if it's possible to shoot at
+    chosen cords.
+    (For use only when shoot at random place.)
+    If the shoot is out of array range or
+    just sensless, returns False,
+    in another case returns True
+    '''
     list_of_cords = []
     to_remove = []
     for element in range(-1, 2):
@@ -117,7 +139,9 @@ def check_first_shoot(matrix, cords, dim):
 
 
 def check_if_score(matrix, cords):
-    '''Checks if shot was succesful'''
+    '''
+    Checks if shot was succesful
+    '''
     if matrix[cords[0], cords[1]] == 1:
         return True
     else:
@@ -125,7 +149,9 @@ def check_if_score(matrix, cords):
 
 
 def check_direction_and_turn(first_cords, second_cords):
-    '''Checks direction and turn of ship'''
+    '''
+    Checks direction and turn of ship
+    '''
     f_x, s_x = first_cords[0], second_cords[0]
     f_y, s_y = first_cords[1], second_cords[1]
     if f_x-s_x == 0:
@@ -144,7 +170,12 @@ def check_direction_and_turn(first_cords, second_cords):
 
 
 def missed(matrix_object, cords, is_bot=True):
-    '''Is used when shoot was missed'''
+    '''
+    Is used when shoot was missed.
+    Prints proper message and
+    if it is sensible, changes value of array
+    in given cords
+    '''
     if is_bot:
         print('BOT CHYBIŁ')
     else:
@@ -155,7 +186,11 @@ def missed(matrix_object, cords, is_bot=True):
 
 
 def hit(matrix_object, cords, fleet_object, dim, is_bot=True):
-    '''Is used when shoot was succesful'''
+    '''
+    Is used when shoot was succesful.
+    Prints proper message, changes array value
+    and hurts ship in fleet.
+    '''
     if is_bot:
         print('BOT TRAFIŁ')
     else:
@@ -166,7 +201,11 @@ def hit(matrix_object, cords, fleet_object, dim, is_bot=True):
 
 
 def sinked(fleet_object, cords, is_bot=True):
-    '''Is used when ship sinks'''
+    '''
+    Is used when ship sinks.
+    Prints proper message and removes sinked
+    ship from the fleet
+    '''
     if is_bot:
         print('BOT ZATOPIŁ STATEK!')
     else:
@@ -176,7 +215,11 @@ def sinked(fleet_object, cords, is_bot=True):
 
 
 def f_continue(fleet_object, cords, shot_list=None, is_bot=True):
-    '''Is used when shooting serie is continued'''
+    '''
+    Is used when shooting serie is continued.
+    Appends list of shot ship's cords and prints
+    proper message.
+    '''
     fleet_object.get_ship(cords).remove_cord(cords)
     if shot_list is not None:
         shot_list.append(cords)
