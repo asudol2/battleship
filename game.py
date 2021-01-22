@@ -8,7 +8,7 @@ def main():
     Player_Matrix, Player_Fleet = make_player_matrix()
     print('Grajmy!')
     show_actual_state(show_actual_board(Player_Matrix.get_matrix()), show_actual_board(Bot_Matrix.get_matrix(), True))
-    list_of_shot_cords = []
+    shot_list = []
     while Player_Fleet.if_fleet_is() and Bot_Fleet.if_fleet_is():
         result_b, result_p = True, True
         while result_p:
@@ -18,12 +18,12 @@ def main():
                 print('Koniec gry :)')
                 return
             else:
-                # print(show_actual_board(Bot_Matrix.get_matrix(), True))
+                print(show_actual_board(Bot_Matrix.get_matrix()))
                 print('Gramy dalej')
         else:
             show_actual_state(show_actual_board(Player_Matrix.get_matrix()), show_actual_board(Bot_Matrix.get_matrix(), True))
         while result_b:
-            Player_Matrix, result_b, Player_Fleet, list_of_shot_cords = better_bot_shoot(Player_Matrix, Player_Fleet, list_of_shot_cords)
+            Player_Matrix, result_b, Player_Fleet, shot_list = better_bot_shoot(Player_Matrix, Player_Fleet, shot_list)
             if not Player_Fleet.if_fleet_is():
                 print('Przegrałeś!')
                 print('Koniec gry :)')

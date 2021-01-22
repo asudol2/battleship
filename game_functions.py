@@ -1,16 +1,18 @@
 from matrix_generation import ask_for_cords, show_actual_board
 from time import sleep
 from bot_functions import (
-    fourth_bot_shoot,
-    third_bot_shoot,
+    # fourth_bot_shoot,
+    # third_bot_shoot,
     first_bot_shoot,
     check_direction_and_turn,
-    second_bot_shoot,
+    # second_bot_shoot,
     check_if_score,
     missed,
     sinked,
     hit,
-    f_continue
+    f_continue,
+    another_bot_shoot,
+    conduct_bot_shot
 )
 
 
@@ -55,62 +57,26 @@ def show_actual_state(player_board, computer_board):
         print(p_board, c_board)
 
 
-def better_bot_shoot(matrix_object, fleet_object, list_of_shot_cords):
-    if len(list_of_shot_cords) == 0:
-        first_cords = first_bot_shoot(matrix_object.get_matrix())
-        if not check_if_score(matrix_object.get_matrix(), first_cords):
-            matrix_object = missed(matrix_object, first_cords)
-            return matrix_object, False, fleet_object, list_of_shot_cords
-        else:
-            lifes, matrix_object, fleet_object= hit(matrix_object, first_cords, fleet_object)
-            if lifes == 0:
-                return matrix_object, True, sinked(fleet_object, first_cords), []
+def better_bot_shoot(matrix_object, fleet_object, shot_list):
+    result = True
+    while result:
+        if len(shot_list) == 0:
+            first_cords = first_bot_shoot(matrix_object.get_matrix())
+            if not check_if_score(matrix_object.get_matrix(), first_cords):
+                matrix_object = missed(matrix_object, first_cords)
+                return matrix_object, False, fleet_object, shot_list
             else:
-                list_of_shot_cords, fleet_object = f_continue(fleet_object, first_cords, list_of_shot_cords)
-
-
-    if len(list_of_shot_cords) == 1:
-        first_cords = list_of_shot_cords[0]
-        result, second_cords = second_bot_shoot(matrix_object.get_matrix(), first_cords, list_of_shot_cords)
-        if not result:
-            matrix_object = missed(matrix_object, second_cords)
-            return matrix_object, False, fleet_object, list_of_shot_cords
+                lifes, matrix_object, fleet_object= hit(matrix_object, first_cords, fleet_object)
+                if lifes == 0:
+                    return matrix_object, True, sinked(fleet_object, first_cords), []
+                else:
+                    shot_list, fleet_object = f_continue(fleet_object, first_cords, shot_list)
         else:
-            lifes, matrix_object, fleet_object = hit(matrix_object, second_cords, fleet_object)
-            if lifes == 0:
-                return matrix_object, True, sinked(fleet_object, second_cords), []
-            else:
-                list_of_shot_cords, fleet_object = f_continue(fleet_object, second_cords, list_of_shot_cords)
+            result, cords = another_bot_shoot(matrix_object.get_matrix(), shot_list)
+            matrix_object, fleet_object, shot_list = conduct_bot_shot(matrix_object, fleet_object, shot_list, cords, result)
+    else:
+        return matrix_object, False, fleet_object, shot_list
 
-
-    if len(list_of_shot_cords) == 2:
-        first_cords, second_cords = list_of_shot_cords[0], list_of_shot_cords[1]
-        direction, turn = check_direction_and_turn(first_cords, second_cords)
-        result, third_cords = third_bot_shoot(matrix_object.get_matrix(), first_cords,
-        second_cords, direction, turn, list_of_shot_cords)
-        if not result:
-            matrix_object = missed(matrix_object, third_cords)
-            return matrix_object, False, fleet_object, list_of_shot_cords
-        else:
-            lifes, matrix_object, fleet_object = hit(matrix_object, third_cords, fleet_object)
-            if lifes == 0:
-                return matrix_object, True, sinked(fleet_object, third_cords), []
-            else:
-                list_of_shot_cords, fleet_object = f_continue(fleet_object, third_cords, list_of_shot_cords)
-
-
-    if len(list_of_shot_cords) == 3:
-        first_cords = list_of_shot_cords[0]
-        second_cords = list_of_shot_cords[1]
-        direction, turn = check_direction_and_turn(first_cords, second_cords)
-        result, fourth_cords = fourth_bot_shoot(matrix_object.get_matrix(),
-        list_of_shot_cords, direction)
-        if not result:
-            matrix_object = missed(matrix_object, fourth_cords)
-            return matrix_object, False, fleet_object, list_of_shot_cords
-        else:
-            lifes, matrix_object, fleet_object = hit(matrix_object, fourth_cords, fleet_object)
-            return matrix_object, True, sinked(fleet_object, fourth_cords), []
 
 
 def introduction():

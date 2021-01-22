@@ -13,22 +13,22 @@ def first_bot_shoot(matrix):
         return cords
 
 
-def check_bot_shoot_result(matrix, cords_list, list_of_shot_cords, direction=None):
+def check_bot_shoot_result(matrix, cords_list, shot_list, direction=None):
     '''Losuje koordynaty z listy, usuwa niepotrzebne i sprawdza rezultat strzału.'''
-    cords_list = check_possibility_of_shoot(cords_list, matrix, list_of_shot_cords, direction)
-    chosen_cords = choice(cords_list)
+    new_list = check_possibility_of_shoot(cords_list, matrix, shot_list, direction)
+    chosen_cords = choice(new_list)
     if matrix[chosen_cords[0], chosen_cords[1]] == 1:
         return True, chosen_cords
     if matrix[chosen_cords[0], chosen_cords[1]] == 0:
         return False, chosen_cords
 
 
-def check_possibility_of_shoot(cords_list, matrix, list_of_shot_cords, direction=None):
+def check_possibility_of_shoot(cords_list, matrix, shot_list, direction=None):
     '''Usuwa koordynaty niemożliwe do wykonania'''
     to_remove = []
     saize = range(0, 10)
     for cords in cords_list:
-        if cords in list_of_shot_cords:
+        if cords in shot_list:
             to_remove.append(cords)
     for cords in to_remove:
         cords_list.remove(cords)
@@ -45,70 +45,37 @@ def check_possibility_of_shoot(cords_list, matrix, list_of_shot_cords, direction
     for cords in to_remove:
         cords_list.remove(cords)
     to_remove = []
-    if direction:
-        for cords in cords_list:
-            for num in [-1, 1]:
-                if direction == 'poziom' and (cords[0] + num) in saize:
-                    if matrix[cords[0] + num, cords[1]] == 2:
-                        to_remove.append(cords)
-                if direction == 'pion' and (cords[1] + num) in saize:
-                    if matrix[cords[0], cords[1] + num] == 2:
-                        to_remove.append(cords)
-        to_remove = list(set(to_remove))
-        for cords in to_remove:
-            cords_list.remove(cords)
-        return cords_list
+    return cords_list
+
+
+def another_bot_shoot(matrix, shot_list, direction=None, turn=None):
+    '''Zwraca rezultat i nowe kordy'''
+    shot_list.sort()
+    f_cords = shot_list[0]
+    s_cords = shot_list[-1]
+    if f_cords == s_cords:
+        cords_list = [(f_cords[0], f_cords[1]+1), (f_cords[0], f_cords[1]-1),
+        (f_cords[0]-1, f_cords[1]), (f_cords[0]+1, f_cords[1])]
+    elif f_cords[0] == s_cords[0]: #poziom
+        cords_list = [(f_cords[0], f_cords[1]+1), (f_cords[0], f_cords[1]-1),
+        (f_cords[0], s_cords[1]-1), (f_cords[0], s_cords[1]+1)]
+    elif f_cords[1] == f_cords[1]: #pion
+        cords_list = [(f_cords[0]-1, f_cords[1]), (f_cords[0]+1, f_cords[1]),
+        (s_cords[0]-1, f_cords[1]), (s_cords[0]+1, f_cords[1])]
+    cords_list = list(set(cords_list))
+    return check_bot_shoot_result(matrix, cords_list, shot_list)
+
+def conduct_bot_shot(matrix_object, fleet_object, shot_list, cords, result):
+    if not result:
+        matrix_object = missed(matrix_object, cords)
+        return matrix_object, fleet_object, shot_list
     else:
-        return cords_list
-
-
-def second_bot_shoot(matrix, cords, list_of_shot_cords):
-    '''Dokonuje strzału w okoliczne miejsce. Jeżeli trafia, zwraca True oraz koordynaty;
-    jeżeli nie, zwraca False oraz koordynaty.'''
-    additional_cords_list = [(cords[0]-1, cords[1]), (cords[0]+1, cords[1]),
-    (cords[0], cords[1]-1), (cords[0], cords[1]+1)]
-    return check_bot_shoot_result(matrix, additional_cords_list, list_of_shot_cords)
-
-
-def third_bot_shoot(matrix, f_cords, s_cords, direction, turn, list_of_shot_cords):
-    '''Strzela w kolejne wylosowane pole, zgodnie z kierunkiem.
-    Jeżeli trafia, zwraca True oraz koordynaty;
-    jeżeli nie, zwraca False i koordynaty.'''
-    if direction == 'poziom':
-        if turn == 'prawo':
-            additional_cords_list = [(s_cords[0], s_cords[1]-2),
-            (s_cords[0], s_cords[1]+1)]
-        if turn == 'lewo':
-            additional_cords_list = [(s_cords[0], s_cords[1]-1),
-            (s_cords[0], s_cords[1]+2)]
-    else:
-        if turn == 'dół':
-            additional_cords_list = [(s_cords[0]-2, s_cords[1]),
-            (s_cords[0]+1, s_cords[1])]
-        if turn == 'góra':
-            additional_cords_list = [(s_cords[0]-1, s_cords[1]),
-            (s_cords[0]+2, s_cords[1])]
-    return check_bot_shoot_result(matrix, additional_cords_list, list_of_shot_cords, direction)
-
-
-def fourth_bot_shoot(matrix, list_of_shot_cords, direction):
-    '''Strzela w wylosowane ostatnie pole, zgodnie z kierunkiem. Jeżeli trafia,
-    zwraca True oraz koordynaty; jeżeli nie, zwraca False i koordynaty.'''
-    f_cords = list_of_shot_cords[0]
-    s_cords = list_of_shot_cords[1]
-    t_cords = list_of_shot_cords[2]
-    if direction == 'poziom':
-        additional_cords_list = [(f_cords[0], f_cords[1]+1), (f_cords[0], f_cords[1]-1),
-        (f_cords[0], s_cords[1]-1), (f_cords[0], s_cords[1]+1),
-        (f_cords[0], t_cords[1]-1), (f_cords[0], t_cords[1]+1)]
-    if direction == 'pion':
-        additional_cords_list = [(f_cords[0]-1, f_cords[1]), (f_cords[0]+1, f_cords[1]),
-        (s_cords[0]-1, f_cords[1]), (s_cords[0]+1, f_cords[1]),
-        (t_cords[0]-1, f_cords[1]), (t_cords[0]+1, f_cords[1])]
-    additional_cords_list = list(set(additional_cords_list))
-    return check_bot_shoot_result(matrix, additional_cords_list, list_of_shot_cords, direction)
-
-
+        lifes, matrix_object, fleet_object = hit(matrix_object, cords, fleet_object)
+        if lifes == 0:
+            return matrix_object, sinked(fleet_object, cords), []
+        else:
+            shot_list, fleet_object = f_continue(fleet_object, cords, shot_list)
+            return matrix_object, fleet_object, shot_list
 
 def check_first_shoot(matrix, cords):
     '''Sprawdza czy w dane miejsce można strzelać'''
@@ -192,14 +159,14 @@ def sinked(fleet_object, cords, is_bot=True):
     fleet_object.remove_ship_from_fleet(fleet_object.get_ship(cords))
     return fleet_object
 
-def f_continue(fleet_object, cords, list_of_shot_cords=None, is_bot=True):
+def f_continue(fleet_object, cords, shot_list=None, is_bot=True):
     fleet_object.get_ship(cords).remove_cord(cords)
-    if not list_of_shot_cords is None:
-        list_of_shot_cords.append(cords)
+    if not shot_list is None:
+        shot_list.append(cords)
     ###sleep(1.)
     if is_bot:
         print('Ostrzał będzie kontynuowany')
     else:
         print('Kontynuuj ostrzał!')
     ###sleep(2.5)
-    return list_of_shot_cords, fleet_object
+    return shot_list, fleet_object
