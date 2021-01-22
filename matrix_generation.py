@@ -1,36 +1,103 @@
 import numpy as np
 from random import randint, choice
 from classes import Ship, Fleet, Matrix
-from time import sleep
+from math import isqrt
 
 
-def generate_empty_matrix():
-    return np.zeros((10, 10), dtype=int)
+def generate_empty_matrix(dim):
+    '''Create empty array of given dimension'''
+    return np.zeros((dim, dim), dtype=int)
 
 
-def create_random_cords():
-    '''Losuje przypadkowe koordynaty w zakresie 0-9'''
-    return (randint(0, 9), randint(0, 9))
+def create_random_cords(dim):
+    '''Draw random cords from given range'''
+    return (randint(0, dim-1), randint(0, dim-1))
 
 
 def choose_direction():
-    '''Losuje kierunek ustawienia statku'''
+    '''Draw direction of shoot'''
     return choice(['poziom', 'pion'])
 
 
+def get_basic_info():
+    '''Gets info about number of ships and dimension
+        of board'''
+    eh = True
+    while eh:
+        print('Ilość kadłubów największego statku powinna zawierać się')
+        print('w przedziale od 1 do 5')
+        big = input('Podaj ile kadłubów ma mieć największy statek.   ')
+        if not big.isdigit():
+            print('Podałeś złe dane. ')
+        else:
+            big = int(big)
+            if big not in range(1, 6):
+                print('Podałeś złe dane. ')
+            else:
+                eh = False
+    eh = True
+    m_dim = count_minimal_dimension(big)
+    if big == 5:
+        print('Plansza musi mieć wymiary 16x16')
+        print('Będzie się ona składać z jednego 5-kadłubowca,')
+        print('dwóch 4-kadłubowców, dwóch 3-kadłubowców,')
+        print('trzech 2-kadłubowców i trzech 1-kadłubowców.')
+        sizes_list = [5, 4, 4, 3, 3, 2,
+                      2, 2, 1, 1, 1]
+        dim = 16
+    else:
+        while eh:
+            print(f'Wymiary planszy to co najmniej {m_dim}x{m_dim}. ')
+            print('Największy dopuszczalny wymiar to 16')
+            dim = input('Jakie wymiary ma mieć plansza? (Podaj długość boku)')
+            if not dim.isdigit():
+                print('Podałeś złe dane. ')
+            else:
+                dim = int(dim)
+                if dim not in range(1, 17):
+                    print('Podałeś złe dane. ')
+                else:
+                    eh = False
+            sizes_list = count_list_of_sizes(big)
+            sizes_list.reverse()
+    return dim, sizes_list
 
-def generate_computer_matrix():
-    '''Tworzy macierz i flotę dla bota'''
-    matrix = generate_empty_matrix()
-    list_of_sizes = [4, 3, 3, 2, 2, 2, 1, 1, 1, 1]
+
+def count_list_of_sizes(big):
+    '''Prepares list of ships' sizes'''
+    list_of_sizes = []
+    mom = 1
+    while big > 0:
+        temp = 1
+        while temp <= big:
+            list_of_sizes.append(mom)
+            temp += 1
+        big -= 1
+        mom += 1
+    return list_of_sizes
+
+
+def count_minimal_dimension(big):
+    '''Calculate minimal needed dimension'''
+    x = big
+    ins = int(x*(x**2 + 6*x + 5)/3)
+    min_dim = isqrt(ins) + 1
+    return min_dim
+
+
+def generate_computer_matrix(list_of_sizes, dim):
+    '''Creates matrix and fleet for bot'''
+    matrix = generate_empty_matrix(dim)
     list_of_infos = []
     for size in list_of_sizes:
         list_of_cords = []
         check = False
         while not check:
-            cords = create_random_cords()
+            cords = create_random_cords(dim)
             direction = choose_direction()
-            check = check_if_making_is_possible(size, cords, matrix, direction)
+            check = check_if_making_is_possible(size, cords,
+                                                matrix, dim,
+                                                direction)
             if check:
                 first, second = cords[0], cords[1]
                 if direction == 'poziom':
@@ -47,47 +114,54 @@ def generate_computer_matrix():
     return Bot_Matrix, Bot_Fleet
 
 
-def make_player_matrix():
-    '''DLA GRACZA: Najpierw generuje macierz zer (tą dla komputera),
-    potem zmienia je na jedynki w miejscach, gdzie występuje statek.; '''
-    list_of_sizes = [4, 3, 3, 2, 2, 2, 1, 1, 1, 1]
+def make_player_matrix(list_of_sizes, dim):
+    '''Conducts creating player's matrix and fleet'''
     list_of_infos = []
-    matrix = np.zeros((10, 10), dtype=int)
-    print(make_empty_board())
+    matrix = np.zeros((dim, dim), dtype=int)
+    print(make_empty_board(dim))
     while list_of_sizes:
         size = list_of_sizes[0]
-        direction, location = get_info_about_ship(size, matrix)
+        direction, location = get_info_about_ship(size, matrix, dim)
         for cord in location:
             first, second = cord
             matrix[first, second] = 1
         list_of_infos.append((size, location, direction))
         list_of_sizes.pop(0)
-        print(show_actual_board(matrix))
+        print(show_actual_board(matrix, dim))
     Player_Matrix = Matrix(matrix)
     Player_Fleet = Fleet(make_list_of_ships(list_of_infos))
     print('Twoja finalna tablica')
     return Player_Matrix, Player_Fleet
 
 
-def make_empty_board():
-    '''Tworzy pusty szablon planszy widocznej planszy '''
-    board = np.zeros((11, 11), dtype=object)
+def make_empty_board(dim):
+    '''Creates empty pattern of visible board'''
+    board = np.zeros((dim+1, dim+1), dtype=object)
     start = 0
     for row in board:
         for column in row:
             row[start] = ' '
             start += 1
         start = 0
-    board[:, 0] = [' 0', ' 1', ' 2', ' 3', ' 4', ' 5',
-    ' 6', ' 7', ' 8', ' 9', '10']
-    board[0] = [' O', 'A', 'B', 'C', 'D',
-    'E', 'F', 'G', 'H', 'I', 'J']
+    hlp = 0
+    while hlp <= dim:
+        if hlp < 10:
+            temp = ' ' + str(hlp)
+            board[hlp, 0] = temp
+        else:
+            board[hlp, 0] = str(hlp)
+        hlp += 1
+    letters = dictionary()
+    hlp = 0
+    while hlp <= dim:
+        board[0, hlp] = letters[str(hlp)]
+        hlp += 1
     return board
 
 
-def show_actual_board(matrix, is_bot=False):
-    '''Zwraca aktualną planszę'''
-    board = make_empty_board()
+def show_actual_board(matrix, dim, is_bot=False):
+    '''Returns actual board'''
+    board = make_empty_board(dim)
     r_index = 0
     for row in matrix:
         r_index += 1
@@ -104,35 +178,30 @@ def show_actual_board(matrix, is_bot=False):
     return board
 
 
-def get_info_about_ship(size, matrix):
-    '''Zbiera informacje na temat statku, przy czym rozmiar będzie
-    podawany jako argument z listy w funkcji make_player_matrix()ISTOTNE:
-    zakładamy, że gracz poprawnie wprowadza statki;
-    do ewentualnej zmiany później'''
+def get_info_about_ship(size, matrix, dim):
+    '''Collects info about ship'''
     direction = None
     print(f'Tworzysz {size}-masztowiec.')
-    #sleep(1.)
     check = False
     if size != 1:
         direction = ask_for_direction()
         if direction == 'poziom':
             composition = 'prawo'
-        if direction == 'pion':
+        else:
             composition = 'dół'
         while not check:
             print('Gdzie znajdzie się ten statek?')
-            #sleep(1.)
-            print('Podaj początkowy koordynat, od którego będzie budowany statek')
-            #sleep(1.)
-            print(f'UWAGA! W następnych krokach statek będzie budowany w {composition}')
+            print('Podaj koordynat, od którego będzie budowany statek')
+            print(f'UWAGA! Następnie statek będzie budowany w {composition}')
             location = []
-            first, second = ask_for_cords()
+            first, second = ask_for_cords(dim)
             cords = (first, second)
-            check = check_if_making_is_possible(size, cords, matrix, direction)
+            check = check_if_making_is_possible(size, cords,
+                                                matrix, dim,
+                                                direction)
             if not check:
                 print('Podane koordynaty są nieodpowiednie.')
                 print('Podaj poprawne dane.')
-                #sleep(1.)
         else:
             location.append(cords)
             while size > 1:
@@ -146,12 +215,11 @@ def get_info_about_ship(size, matrix):
     else:
         while not check:
             print('Gdzie znajdzie się ten statek?')
-            #sleep(1.)
             print('Podaj koordynaty statku.')
             location = []
-            first, second = ask_for_cords()
+            first, second = ask_for_cords(dim)
             cords = (first, second)
-            check = check_if_making_is_possible(1, cords, matrix)
+            check = check_if_making_is_possible(1, cords, matrix, dim)
             if not check:
                 print('Podane koordynaty są nieodpowiednie.')
                 print('Podaj poprawne dane.')
@@ -160,67 +228,50 @@ def get_info_about_ship(size, matrix):
 
 
 def ask_for_direction():
-    '''Zbiera dane nt. ustawienia statku'''
-    #sleep(1.)
+    '''Asks player about direction of creating ship'''
     print('Jeżeli ma być ustawiony poziomo, podaj poziom.')
-    #sleep(1.)
     print('Jeżeli ma być ustawiony pionowo, podaj pion.')
-    #sleep(1.)
     print('Zależnie od wyboru, będzie on rysowany w prawo lub w dół.')
     meanwhile = False
     little_list = ['poziom', 'pion']
     while not meanwhile:
-        direction = get_input('Wpisz kierunek.   ')
+        direction = input('Wpisz kierunek.   ')
         if direction in little_list:
             meanwhile = True
             return direction
         else:
-            #sleep(1.)
             print('Podany został zły argument. Podaj poprawne słowo.')
 
 
-def ask_for_cords():
-    '''Zbiera dane nt. koordynatów pierwszego elementu statku'''
-    dict_of_changers = {
-        'A': 0,
-        'B': 1,
-        'C': 2,
-        'D': 3,
-        'E': 4,
-        'F': 5,
-        'G': 6,
-        'H': 7,
-        'I': 8,
-        'J': 9}
-    list_of_keys = [key for key in dict_of_changers]
+def ask_for_cords(dim):
+    '''Collects data about first cords of ships'''
+    changers = rev_dictionary()
+    list_of_keys = [key for key in changers]
     meanwhile = False
     while not meanwhile:
-        #sleep(1.)
-        row = get_input('Podaj wiersz od 1 do 10.   ')
-        #sleep(1.)
+        row = input(f'Podaj wiersz od 1 do {dim}.   ')
         if row.isdigit():
-            if int(row) in range(1, 11):
-                given = get_input('Podaj kolumnę od A do J.   ')
+            if int(row) in range(1, dim+1):
+                temp_dict = dictionary()
+                last = temp_dict[str(dim)]
+                given = input(f'Podaj kolumnę od A do {last}.   ')
                 column = given.upper()
                 if column in list_of_keys:
-                    second = dict_of_changers[column]
+                    second = changers[column] - 1
                     first = int(row) - 1
                     meanwhile = True
                     return first, second
                 else:
-                    #sleep(1.)
-                    print('Został podany zły argument. Podaj poprawne wielkości.')
+                    print('Zły argument. Podaj poprawne wielkości.')
             else:
-                #sleep(1.)
                 print('Został podany zły argument. Podaj poprawne wielkości.')
         else:
-            #sleep(1.)
             print('Został podany zły argument. Podaj poprawne wielkości.')
 
 
 def make_list_of_ships(list_of_infos):
-    '''Tworzy i zwraca obiekt klasy Fleet korzystając z listy
-    informacji o statkach'''
+    '''Creates and returnes list of ships
+        to make fleet'''
     list_of_ships = []
     infos = list_of_infos
     i = 0
@@ -231,9 +282,8 @@ def make_list_of_ships(list_of_infos):
     return list_of_ships
 
 
-def check_if_making_is_possible(size, cords,  matrix, direction=None):
-    '''Dla gracza;
-    Sprawdza czy w danym miejscu da się postawić statek.'''
+def check_if_making_is_possible(size, cords,  matrix, dim, direction=None):
+    '''Checks if it's possible to place ship in given place'''
     list_of_cords = []
     to_remove = []
     if direction == 'poziom':
@@ -242,9 +292,9 @@ def check_if_making_is_possible(size, cords,  matrix, direction=None):
         m_cords = ((cords[0] + size - 1), cords[1])
     else:
         m_cords = cords
-    if not m_cords[0] in range(10) or not m_cords[1] in range(10):
+    if (not m_cords[0] in range(dim)) or (not m_cords[1] in range(dim)):
         return False
-    for number in range(-1, size +1):
+    for number in range(-1, size + 1):
         if direction == 'poziom':
             list_of_cords.append((cords[0], cords[1] + number))
             list_of_cords.append((cords[0] + 1, cords[1] + number))
@@ -258,7 +308,7 @@ def check_if_making_is_possible(size, cords,  matrix, direction=None):
             list_of_cords.append((cords[0] + 1, cords[1] + number))
             list_of_cords.append((cords[0] - 1, cords[1] + number))
     for loc in list_of_cords:
-        if not loc[0] in range(10) or not loc[1] in range(10):
+        if not loc[0] in range(dim) or not loc[1] in range(dim):
             to_remove.append(loc)
     for sth in to_remove:
         if sth in list_of_cords:
@@ -269,5 +319,34 @@ def check_if_making_is_possible(size, cords,  matrix, direction=None):
     return True
 
 
-def get_input(message):
-    return input(message)
+def dictionary():
+    '''Dict of replecable values'''
+    letters = {
+        '0': ' 0',
+        '1': 'A',
+        '2': 'B',
+        '3': 'C',
+        '4': 'D',
+        '5': 'E',
+        '6': 'F',
+        '7': 'G',
+        '8': 'H',
+        '9': 'I',
+        '10': 'J',
+        '11': 'K',
+        '12': 'L',
+        '13': 'M',
+        '14': 'N',
+        '15': 'O',
+        '16': 'P',
+        '17': 'Q',
+    }
+    return letters
+
+
+def rev_dictionary():
+    '''Reversed dict of values'''
+    letters = dictionary()
+    letters['0'] = '0'
+    rev_letters = {v: int(k) for k, v in letters.items()}
+    return rev_letters

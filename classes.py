@@ -1,7 +1,7 @@
 
 class Ship:
-    '''Tworzy statki o atrybutach size, direction,
-    location(lista krotek/koordynatów)'''
+    '''Makes ship object with size, direction
+    and location (list of tuples) attributes'''
     def __init__(self, size, location, direction=None):
         self._size = int(size)
         self._direction = direction
@@ -14,7 +14,8 @@ class Ship:
         self._location = new_location
 
     def remove_cord(self, cord):
-        '''Usuwa dany koordynat z listy koordynatów statku'''
+        '''Removes particular cord
+            from ship location'''
         self._location.remove(cord)
 
     def get_size(self):
@@ -30,12 +31,12 @@ class Ship:
         self._direction = new_direction
 
     def hurt(self):
-        '''Odejmuje jeden punkt życia/jedną jednostkę z size'''
+        '''Removes one hp point/size unit'''
         self._size -= 1
 
 
 class Fleet:
-    '''Przechowuje listę obiektów klasy Ship '''
+    '''Stores list of ship objects'''
     def __init__(self, ships_list):
         self._ships_list = ships_list
 
@@ -46,16 +47,15 @@ class Fleet:
         self._ships_list = new_list
 
     def get_ship(self, cords):
-        '''Zwraca statek znajdujący się na danych koordynatach.;
-        *ISTOTNE* Kwestia, czy statek jest we flocie musi
-        zostać uprzednio sprawdzona!'''
+        '''Returns ship which has given cords
+            in location'''
         list_of_cords = self.get_list_of_cords()
         for element in list_of_cords:
             if cords in element:
                 return self._ships_list[list_of_cords.index(element)]
 
     def get_list_of_cords(self):
-        '''Zwraca listę wszystkich koordynatów, gdzie znajdują się statki'''
+        '''Returns list of whole cords used by fleet'''
         list_of_cords = []
         ships_list = self.get_ships_list()
         for ship in ships_list:
@@ -63,9 +63,11 @@ class Fleet:
         return list_of_cords
 
     def remove_ship_from_fleet(self, ship_object):
+        '''Removes particular ship from fleet list'''
         self._ships_list.remove(ship_object)
 
     def if_fleet_is(self):
+        '''Checks if fleet has any ships'''
         if self._ships_list:
             return True
         else:
@@ -73,7 +75,7 @@ class Fleet:
 
 
 class Matrix:
-    '''Przetrzymuje dane o tablicy 01'''
+    '''Store array data'''
     def __init__(self, matrix):
         self._matrix = matrix
 
@@ -84,6 +86,7 @@ class Matrix:
         self._matrix = new_matrix
 
     def change_element_value(self, cord, value):
-        '''Zmienia wartość pola o podanych koordynatach na daną wartość'''
+        '''Changes value of cord in matrix for
+            given value'''
         first, second = cord[0], cord[1]
         self._matrix[first, second] = value
